@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const foodCollection = client.db("dishDynamoDB").collection("foods");
+    const blogsCollection = client.db("dishDynamoDB").collection("blogData");
 
     // get api
 
@@ -94,6 +95,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
+    // blogData api
+
+    app.get("/blogs", async (req, res) => {
+      const result = await blogsCollection.find().toArray();
       res.send(result);
     });
 

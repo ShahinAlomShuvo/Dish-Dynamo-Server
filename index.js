@@ -27,6 +27,7 @@ async function run() {
 
     const foodCollection = client.db("dishDynamoDB").collection("foods");
     const blogsCollection = client.db("dishDynamoDB").collection("blogData");
+    const usersCollection = client.db("dishDynamoDB").collection("user");
 
     // get api
 
@@ -112,6 +113,15 @@ async function run() {
       const result = await blogsCollection.findOne(query);
       res.send(result);
     });
+
+    // post api
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
     // patch
     app.patch("/foods/:id", async (req, res) => {
       const id = req.params.id;

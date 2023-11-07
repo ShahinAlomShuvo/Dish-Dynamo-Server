@@ -59,10 +59,7 @@ async function run() {
       const searchValue = req.query.searchValue;
       const query = {};
       if (searchValue) {
-        // If searchValue is provided, create a regex pattern for the search
-        const searchPattern = new RegExp(searchValue, "i"); // "i" for case-insensitive search
-
-        // Add the foodName field to the query using the searchPattern
+        const searchPattern = new RegExp(searchValue, "i");
         query.foodName = searchPattern;
       }
 
@@ -119,6 +116,13 @@ async function run() {
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // add food by user
+    app.post("/usersFood", async (req, res) => {
+      const newFood = req.body;
+      const result = await foodCollection.insertOne(newFood);
       res.send(result);
     });
 

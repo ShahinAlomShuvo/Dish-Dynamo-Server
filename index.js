@@ -96,6 +96,22 @@ async function run() {
       res.send(result);
     });
 
+    // food added by user  api
+    app.get("/usersFood", async (req, res) => {
+      const options = {
+        projection: {
+          foodName: 1,
+          foodImageUrl: 1,
+          price: 1,
+          buyerEmail: 1,
+        },
+      };
+      const query = { buyerEmail: req.query.email };
+      console.log(query);
+      const result = await foodCollection.find(query, options).toArray();
+      res.send(result);
+    });
+
     // blogData api
 
     app.get("/blogs", async (req, res) => {

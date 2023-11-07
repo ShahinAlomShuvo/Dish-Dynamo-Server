@@ -105,6 +105,13 @@ async function run() {
       res.send(result);
     });
 
+    // blogData single api
+    app.get("/blogs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await blogsCollection.findOne(query);
+      res.send(result);
+    });
     // patch
     app.patch("/foods/:id", async (req, res) => {
       const id = req.params.id;

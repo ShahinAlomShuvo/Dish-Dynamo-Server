@@ -55,6 +55,7 @@ async function run() {
     const foodCollection = client.db("dishDynamoDB").collection("foods");
     const blogsCollection = client.db("dishDynamoDB").collection("blogData");
     const usersCollection = client.db("dishDynamoDB").collection("user");
+    const orderFoodCollection = client.db("dishDynamoDB").collection("order");
 
     // jwt secure api
 
@@ -147,7 +148,7 @@ async function run() {
     });
 
     // food added by user  api
-    app.get("/usersFood", verifyToken, async (req, res) => {
+    app.get("/usersfood", verifyToken, async (req, res) => {
       if (req.user.email !== req.query.email) {
         return res.status(403).send({ message: "Forbidden Access" });
       }
@@ -157,12 +158,23 @@ async function run() {
           foodName: 1,
           foodImageUrl: 1,
           price: 1,
-          buyerEmail: 1,
+          userEmail: 1,
         },
       };
-      const query = { buyerEmail: req.query.email };
-      console.log(query);
+      const query = { userEmail: req.query.email };
+
       const result = await foodCollection.find(query, options).toArray();
+      res.send(result);
+    });
+
+    // food added by user  api
+    app.get("/orderingfoods", verifyToken, async (req, res) => {
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
+
+      const query = { userEmail: req.query.email };
+      const result = await orderFoodCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -190,9 +202,16 @@ async function run() {
     });
 
     // add food by user
-    app.post("/usersFood", async (req, res) => {
+    app.post("/usersfood", async (req, res) => {
       const newFood = req.body;
       const result = await foodCollection.insertOne(newFood);
+      res.send(result);
+    });
+
+    // ordering food
+    app.post("/orderingfoods", async (req, res) => {
+      const purchaseFood = req.body;
+      const result = await orderFoodCollection.insertOne(purchaseFood);
       res.send(result);
     });
 

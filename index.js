@@ -91,6 +91,7 @@ async function run() {
           foodCategory: 1,
           price: 1,
           quantity: 1,
+          orders: 1,
         },
       };
       const query = {};
@@ -121,7 +122,7 @@ async function run() {
           foodCategory: 1,
           price: 1,
           quantity: 1,
-          order: 1,
+          orders: 1,
         },
       };
 
@@ -178,6 +179,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/usersfood/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
     // blogData api
 
     app.get("/blogs", async (req, res) => {
@@ -190,6 +198,14 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await blogsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // user order
+
+    app.get("/orderFoods", async (req, res) => {
+      const query = { userEmail: req.query.email };
+      const result = await orderFoodCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -216,6 +232,8 @@ async function run() {
     });
 
     // patch
+
+    // update quantity (available product )
     app.patch("/foods/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -227,6 +245,62 @@ async function run() {
         },
       };
       const result = await foodCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // put
+
+    // update orders(increase orders)
+    app.put("/foods/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const ordersCount = req.body;
+      console.log(ordersCount);
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $inc: {
+          orders: 1,
+        },
+      };
+      const result = await foodCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    app.put("/usersfood/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+
+      console.log(id);
+
+      const updateProduct = {
+        $set: {
+          foodImageUrl: product.foodImageUrl,
+          foodName: product.foodName,
+          quantity: product.quantity,
+          price: product.price,
+          foodOrigin: product.foodOrigin,
+          foodCategory: product.foodCategory,
+          userName: product.userName,
+          userEmail: product.userEmail,
+          description: product.description,
+        },
+      };
+      const result = await foodCollection.updateOne(
+        filter,
+        updateProduct,
+        options
+      );
+      res.send(result);
+    });
+
+    // delete
+    app.delete("/orderFoods/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await orderFoodCollection.deleteOne(query);
       res.send(result);
     });
 

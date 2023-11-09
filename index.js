@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://dishdynamo-c649f.web.app"],
     credentials: true,
   })
 );
@@ -50,7 +50,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const foodCollection = client.db("dishDynamoDB").collection("foods");
     const blogsCollection = client.db("dishDynamoDB").collection("blogData");
@@ -159,7 +159,7 @@ async function run() {
           foodName: 1,
           foodImageUrl: 1,
           price: 1,
-          userEmail: 1,
+          quantity: 1,
         },
       };
       const query = { userEmail: req.query.email };
@@ -203,7 +203,11 @@ async function run() {
 
     // user order
 
-    app.get("/orderFoods", async (req, res) => {
+    app.get("/orderFoods", verifyToken, async (req, res) => {
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
+
       const query = { userEmail: req.query.email };
       const result = await orderFoodCollection.find(query).toArray();
       res.send(result);
@@ -305,7 +309,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );

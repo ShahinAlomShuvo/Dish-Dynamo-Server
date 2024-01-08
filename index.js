@@ -92,6 +92,7 @@ async function run() {
           price: 1,
           quantity: 1,
           orders: 1,
+          description: 1,
         },
       };
       const query = {};
@@ -123,6 +124,7 @@ async function run() {
           price: 1,
           quantity: 1,
           orders: 1,
+          description: 1,
         },
       };
 
